@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "name": "ielts-writing-test-set-four",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "." }
+    },
+    {
+      "src": "api/telegram.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/telegram",
+      "methods": ["POST", "OPTIONS"],
+      "dest": "/api/telegram.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "env": {
+    "TELEGRAM_BOT_TOKEN": "@telegram_bot_token",
+    "TELEGRAM_CHAT_ID": "@telegram_chat_id"
+  }
+}
