@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "name": "ielts-writing-test-set-four",
   "builds": [
     {
       "src": "package.json",
       "use": "@vercel/static-build",
-      "config": { "distDir": "." }
+      "config": {
+        "distDir": "."
+      }
     },
     {
       "src": "api/telegram.js",
