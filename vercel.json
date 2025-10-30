@@ -23,9 +23,5 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "env": {
-    "TELEGRAM_BOT_TOKEN": "YOUR_ACTUAL_BOT_TOKEN_HERE",
-    "TELEGRAM_CHAT_ID": "YOUR_ACTUAL_CHAT_ID_HERE"
-  }
+  ]
 }
