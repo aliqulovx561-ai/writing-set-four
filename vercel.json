@@ -25,7 +25,7 @@
     }
   ],
   "env": {
-    "TELEGRAM_BOT_TOKEN": "@telegram_bot_token",
-    "TELEGRAM_CHAT_ID": "@telegram_chat_id"
+    "TELEGRAM_BOT_TOKEN": "YOUR_ACTUAL_BOT_TOKEN_HERE",
+    "TELEGRAM_CHAT_ID": "YOUR_ACTUAL_CHAT_ID_HERE"
   }
 }
