@@ -938,13 +938,11 @@
         } else {
           console.error('❌ Serverless function error:', result.error);
           console.log('TELEGRAM MESSAGE (Fallback):\n' + message);
-          alert('⚠️ Failed to send to Telegram - check console for test data');
           return false;
         }
       } catch (error) {
         console.error('❌ Error sending to serverless function:', error);
         console.log('TELEGRAM MESSAGE (Fallback):\n' + message);
-        alert('❌ Network error - check console for test data');
         return false;
       }
     }
@@ -956,6 +954,7 @@
       }
       
       document.getElementById("loadingIndicator").style.display = "block";
+      document.getElementById("submitButton").disabled = true;
       
       const task1Answer = document.getElementById("textarea1").value;
       const task2Answer = document.getElementById("textarea2").value;
@@ -1019,14 +1018,14 @@ ${task2Answer}
       const testData = {
         studentName: studentName,
         teacherName: teacherName,
-        violations: violations,
+        violations: {...violations, warningCount},
         task1WordCount: task1WordCount,
         task2WordCount: task2WordCount,
         totalWords: totalWords,
         testDuration: (60 * 60 - totalSeconds)
       };
 
-      await sendToTelegramDirect(telegramMessage, testData);
+      const telegramSuccess = await sendToTelegramDirect(telegramMessage, testData);
       
       downloadPDF();
       
@@ -1042,6 +1041,10 @@ ${task2Answer}
       
       document.getElementById("textarea1").disabled = true;
       document.getElementById("textarea2").disabled = true;
+      
+      if (!telegramSuccess) {
+        alert('Test submitted locally. Telegram notification failed - check console for details.');
+      }
     }
 
     function reviewTest() {
