@@ -75,74 +75,7 @@ export default async function handler(req, res) {
     }
 
     // Format the Telegram message
-    const formattedMessage = formatTelegramMessage(
-      message, 
-      studentName, 
-      teacherName, 
-      violations, 
-      task1WordCount, 
-      task2WordCount, 
-      totalWords, 
-      testDuration
-    );
-
-    console.log('📤 Sending to Telegram...');
-    
-    // Send to Telegram
-    const telegramResponse = await bot.sendMessage(TELEGRAM_CHAT_ID, formattedMessage);
-    
-    console.log('✅ Telegram message sent successfully!', {
-      messageId: telegramResponse.message_id,
-      student: studentName
-    });
-
-    res.status(200).json({ 
-      success: true, 
-      message: 'Test submitted successfully to Telegram',
-      telegramMessageId: telegramResponse.message_id
-    });
-
-  } catch (error) {
-    console.error('❌ Telegram API error:', {
-      name: error.name,
-      message: error.message,
-      code: error.code,
-      stack: error.stack
-    });
-
-    let userMessage = 'Failed to send message to Telegram';
-    
-    if (error.response?.body?.description?.includes('Forbidden')) {
-      userMessage = 'Bot cannot send messages to this chat. Please make sure the bot was started.';
-    } else if (error.response?.body?.description?.includes('chat not found')) {
-      userMessage = 'Chat ID not found. Please check TELEGRAM_CHAT_ID.';
-    } else if (error.response?.body?.description?.includes('Unauthorized')) {
-      userMessage = 'Invalid bot token. Please check TELEGRAM_BOT_TOKEN.';
-    }
-
-    res.status(500).json({ 
-      success: false, 
-      error: userMessage,
-      details: error.message 
-    });
-  }
-}
-
-function formatTelegramMessage(
-  fullMessage, 
-  studentName, 
-  teacherName, 
-  violations, 
-  task1WordCount, 
-  task2WordCount, 
-  totalWords, 
-  testDuration
-) {
-  // Extract answers from the message
-  const task1Answer = extractAnswer(fullMessage, 'TASK 1 - TABLE DESCRIPTION');
-  const task2Answer = extractAnswer(fullMessage, 'TASK 2 - ESSAY WRITING');
-
-  return `📝 IELTS WRITING TEST SUBMITTED
+    const formattedMessage = `📝 IELTS WRITING TEST SUBMITTED
 
 👤 STUDENT INFORMATION
 • Name: ${studentName || 'Not provided'}
@@ -160,7 +93,7 @@ Summarise the information by selecting and reporting the main features, making c
 Write at least 150 words.
 
 📝 Student's Answer:
-${task1Answer || 'No answer provided'}
+${extractAnswer(message, 'TASK 1 - TABLE DESCRIPTION') || 'No answer provided'}
 
 📊 Task 1 Statistics:
 • Words: ${task1WordCount}
@@ -171,7 +104,7 @@ Question:
 Some people say manufacturers and supermarkets are responsible for reducing the packaging on the products they sell. Others argue that consumers should buy products with less packaging. Discuss both views and give your own opinion.
 
 📝 Student's Answer:
-${task2Answer || 'No answer provided'}
+${extractAnswer(message, 'TASK 2 - ESSAY WRITING') || 'No answer provided'}
 
 📊 Task 2 Statistics:
 • Words: ${task2WordCount}
@@ -194,6 +127,46 @@ ${task2Answer || 'No answer provided'}
 ---
 ✅ Test automatically submitted and recorded
 🕒 System Time: ${new Date().toLocaleString()}`;
+
+    console.log('📤 Sending to Telegram...');
+    
+    // Send to Telegram
+    const telegramResponse = await bot.sendMessage(TELEGRAM_CHAT_ID, formattedMessage);
+    
+    console.log('✅ Telegram message sent successfully!', {
+      messageId: telegramResponse.message_id,
+      student: studentName
+    });
+
+    res.status(200).json({ 
+      success: true, 
+      message: 'Test submitted successfully to Telegram',
+      telegramMessageId: telegramResponse.message_id
+    });
+
+  } catch (error) {
+    console.error('❌ Telegram API error:', {
+      name: error.name,
+      message: error.message,
+      code: error.code
+    });
+
+    let userMessage = 'Failed to send message to Telegram';
+    
+    if (error.response?.body?.description?.includes('Forbidden')) {
+      userMessage = 'Bot cannot send messages to this chat. Please make sure the bot was started.';
+    } else if (error.response?.body?.description?.includes('chat not found')) {
+      userMessage = 'Chat ID not found. Please check TELEGRAM_CHAT_ID.';
+    } else if (error.response?.body?.description?.includes('Unauthorized')) {
+      userMessage = 'Invalid bot token. Please check TELEGRAM_BOT_TOKEN.';
+    }
+
+    res.status(500).json({ 
+      success: false, 
+      error: userMessage,
+      details: error.message 
+    });
+  }
 }
 
 function extractAnswer(fullMessage, taskSection) {
