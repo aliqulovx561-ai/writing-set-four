@@ -31,11 +31,4 @@ Discuss both views and give your own opinion.
 
 Write at least 250 words.
 
-## Setup for Deployment
-
-### 1. Environment Variables
-Set these in your Vercel project:
-- `TELEGRAM_BOT_TOKEN`: Your Telegram bot token
-- `TELEGRAM_CHAT_ID`: Your Telegram chat ID
-
-### 2. File Structure
+## File Structure
