@@ -6,618 +6,565 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f5f5f5;
-      line-height: 1.6;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #fff;
     }
-    
-    /* Rules Screen */
-    #rulesScreen {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    
-    .rules-container {
-      background: white;
-      max-width: 800px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    }
-    
-    .rules-container h1 {
-      color: #2c3e50;
-      text-align: center;
-      margin-bottom: 10px;
-      font-size: 2.2em;
-    }
-    
-    .rules-container h2 {
-      color: #34495e;
-      margin: 25px 0 15px 0;
-      border-bottom: 2px solid #3498db;
-      padding-bottom: 5px;
-    }
-    
-    .rules-container ul {
-      margin: 15px 0;
-      padding-left: 25px;
-    }
-    
-    .rules-container li {
-      margin-bottom: 8px;
-    }
-    
-    .warning-box {
-      background: #fff3cd;
-      border: 1px solid #ffeaa7;
-      border-left: 4px solid #f39c12;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 20px 0;
-    }
-    
-    .teacher-selection, .name-input {
-      background: #e8f4f8;
-      border: 2px solid #3498db;
-      border-radius: 10px;
-      padding: 20px;
-      margin: 20px 0;
-    }
-    
-    .radio-group {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-    
-    .radio-label {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      padding: 10px 15px;
-      background: white;
-      border: 2px solid #bdc3c7;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-    }
-    
-    .radio-label:hover {
-      border-color: #3498db;
-      transform: translateY(-2px);
-    }
-    
-    .radio-label input[type="radio"] {
-      margin-right: 8px;
-    }
-    
-    .radio-label input[type="radio"]:checked + span {
-      font-weight: bold;
-      color: #3498db;
-    }
-    
-    .name-input input {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #bdc3c7;
-      border-radius: 8px;
-      font-size: 16px;
-      margin-top: 8px;
-      transition: border-color 0.3s ease;
-    }
-    
-    .name-input input:focus {
-      outline: none;
-      border-color: #3498db;
-      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-    }
-    
-    .start-button {
-      background: linear-gradient(135deg, #27ae60, #2ecc71);
-      color: white;
-      border: none;
-      padding: 15px 40px;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      margin: 20px auto;
-      display: block;
-      transition: all 0.3s ease;
-    }
-    
-    .start-button:disabled {
-      background: #95a5a6;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .start-button:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
-    }
-    
-    /* Test Container */
-    #testContainer {
-      display: none;
-    }
-    
-    .test-info {
-      background: #3498db;
-      color: white;
-      padding: 15px 30px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 16px;
-    }
-    
     .header {
-      background: white;
+      background-color: white;
       padding: 15px 30px;
-      border-bottom: 1px solid #ecf0f1;
+      border-bottom: 1px solid #ccc;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: relative;
     }
-    
-    .student-name-display {
-      font-weight: bold;
-      color: #2c3e50;
+    .header img {
+      height: 30px;
     }
-    
     .top-right-info {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 8px;
+      gap: 5px;
     }
-    
     .timer-display {
-      background: #2c3e50;
-      color: white;
-      padding: 8px 15px;
-      border-radius: 20px;
       font-weight: bold;
-      font-size: 16px;
-      min-width: 80px;
-      text-align: center;
+      font-size: 18px;
+      color: #d32f2f;
+      background-color: #f8f9fa;
+      padding: 5px 10px;
+      border-radius: 4px;
+      border: 1px solid #d32f2f;
     }
-    
-    .timer-display.warning {
-      background: #e74c3c;
-      animation: pulse 1s infinite;
-    }
-    
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-    
     .violation-counter {
-      background: #f39c12;
-      color: white;
-      padding: 5px 12px;
-      border-radius: 15px;
+      background-color: #fff3cd;
+      padding: 5px 10px;
+      border-radius: 4px;
       font-size: 12px;
-      font-weight: bold;
+      color: #856404;
+      border: 1px solid #ffeaa7;
     }
-    
-    .violation-counter.warning {
-      background: #e74c3c;
-    }
-    
-    .header img {
-      height: 35px;
-    }
-    
     .part-bar {
-      background: #ecf0f1;
+      background-color: #f2f4ec;
       padding: 15px 30px;
-      border-bottom: 1px solid #bdc3c7;
-      color: #2c3e50;
-      font-weight: 500;
+      font-size: 16px;
+      border-bottom: 1px solid #ccc;
     }
-    
+    .tab-buttons {
+      display: flex;
+      justify-content: center;
+      border-top: 1px solid #ccc;
+      background: #f9f9f9;
+    }
+    .tab-buttons button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      background: #eee;
+    }
+    .tab-buttons button.active {
+      background: #d0d0d0;
+    }
     .main {
       display: flex;
-      height: calc(100vh - 200px);
-      background: white;
+      height: calc(100vh - 240px);
+      overflow: hidden;
     }
-    
     .left, .right {
-      padding: 25px;
+      padding: 20px 30px;
       overflow-y: auto;
     }
-    
     .left {
       width: 50%;
-      border-right: 3px solid #bdc3c7;
-      background: #f8f9fa;
+      border-right: 4px solid #999;
+      resize: horizontal;
+      overflow: auto;
+      min-width: 250px;
     }
-    
     .right {
       width: 50%;
-      background: white;
+      resize: horizontal;
+      min-width: 250px;
     }
-    
-    .task-content {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    
-    .task-content p {
-      margin-bottom: 15px;
-    }
-    
-    .task-instructions {
-      color: #7f8c8d;
-      font-style: italic;
-      background: #f8f9fa;
-      padding: 10px;
-      border-radius: 5px;
-      border-left: 3px solid #3498db;
-    }
-    
     .image-container img {
       width: 100%;
       height: auto;
+      margin-top: 10px;
       border: 1px solid #ddd;
-      border-radius: 8px;
-      margin-top: 15px;
+      border-radius: 4px;
     }
-    
     textarea {
       width: 100%;
       height: 100%;
-      border: 2px solid #ecf0f1;
-      border-radius: 8px;
-      padding: 15px;
       font-size: 16px;
-      line-height: 1.6;
+      padding: 10px;
       resize: none;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      transition: border-color 0.3s ease;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
-    
-    textarea:focus {
-      outline: none;
-      border-color: #3498db;
-      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-    }
-    
-    textarea:disabled {
-      background: #f8f9fa;
-      color: #7f8c8d;
-    }
-    
     .word-count {
       text-align: right;
-      margin-top: 10px;
       font-size: 14px;
-      color: #7f8c8d;
+      margin-top: 5px;
     }
-    
     .word-count.warning {
-      color: #e74c3c;
-      font-weight: bold;
+      color: #d32f2f;
     }
-    
-    .typing-speed {
-      text-align: right;
-      font-size: 12px;
-      color: #95a5a6;
-      margin-top: 2px;
-    }
-    
-    .typing-speed.warning {
-      color: #e74c3c;
-      font-weight: bold;
-    }
-    
-    .tab-buttons {
-      display: flex;
-      background: #34495e;
-    }
-    
-    .tab-buttons button {
-      flex: 1;
-      padding: 15px;
-      border: none;
-      background: #2c3e50;
-      color: white;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-    
-    .tab-buttons button.active {
-      background: #3498db;
-    }
-    
-    .tab-buttons button:hover:not(.active) {
-      background: #34495e;
-    }
-    
-    .submit-btn, .review-btn {
-      background: linear-gradient(135deg, #3498db, #2980b9);
+    .submit-btn {
+      background-color: #0078d7;
       color: white;
       border: none;
-      padding: 15px 30px;
+      padding: 10px 20px;
+      margin: 10px auto;
       font-size: 16px;
-      border-radius: 8px;
       cursor: pointer;
-      margin: 20px auto;
       display: block;
-      transition: all 0.3s ease;
+      border-radius: 4px;
     }
-    
-    .submit-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+    .submit-btn:hover {
+      background-color: #106ebe;
     }
-    
     .submit-btn:disabled {
-      background: #95a5a6;
+      background-color: #6c757d;
       cursor: not-allowed;
     }
-    
     .review-btn {
-      background: linear-gradient(135deg, #27ae60, #2ecc71);
-    }
-    
-    .review-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
-    }
-    
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #3498db;
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px auto;
       font-size: 16px;
-      display: none;
+      cursor: pointer;
+      display: block;
+      border-radius: 4px;
+    }
+    .review-btn:hover {
+      background-color: #5a6268;
     }
     
-    .submission-confirmation {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+    .test-info {
+      background-color: #e9f7fe;
+      padding: 10px 30px;
+      border-bottom: 1px solid #b8daff;
+      font-size: 14px;
+      color: #004085;
+    }
+    
+    #rulesScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .rules-container {
+      max-width: 800px;
+      max-height: 80vh;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+      padding: 30px;
       border-radius: 8px;
-      padding: 15px;
-      margin: 15px 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .rules-container h1 {
+      color: #0078d7;
       text-align: center;
+      margin-bottom: 20px;
+    }
+    .rules-container h2 {
+      color: #333;
+      margin-top: 25px;
+      margin-bottom: 10px;
+    }
+    .rules-container p, .rules-container ul {
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+    .rules-container ul {
+      padding-left: 20px;
+    }
+    .rules-container li {
+      margin-bottom: 8px;
+    }
+    .rules-container .warning {
+      background-color: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 4px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .rules-container .warning strong {
+      color: #856404;
+    }
+    
+    .teacher-selection {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #e9f7fe;
+      border-radius: 8px;
+      border: 2px solid #0078d7;
+    }
+    .teacher-selection label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: bold;
+      color: #0078d7;
+    }
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .radio-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-weight: normal;
+      color: #333;
+      position: relative;
+      padding-left: 30px;
+    }
+    .radio-label input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .radio-custom {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 20px;
+      width: 20px;
+      background-color: #fff;
+      border-radius: 50%;
+      border: 2px solid #0078d7;
+      transition: all 0.3s ease;
+    }
+    .radio-label input[type="radio"]:checked ~ .radio-custom {
+      background-color: #0078d7;
+      border-color: #0078d7;
+    }
+    .radio-custom:after {
+      content: "";
+      position: absolute;
       display: none;
+      top: 4px;
+      left: 4px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+    }
+    .radio-label input[type="radio"]:checked ~ .radio-custom:after {
+      display: block;
+    }
+    .radio-label:hover .radio-custom {
+      border-color: #005a9e;
+      transform: scale(1.1);
+    }
+    
+    .name-input {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #e9f7fe;
+      border-radius: 8px;
+      border: 2px solid #0078d7;
+    }
+    .name-input label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #0078d7;
+    }
+    .name-input input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .name-input input:focus {
+      outline: none;
+      border-color: #0078d7;
+      box-shadow: 0 0 5px rgba(0,120,215,0.3);
+    }
+    .start-button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .start-button:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+    .start-button:hover:not(:disabled) {
+      background-color: #218838;
     }
     
     .modal {
       display: none;
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 2000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      z-index: 1000;
       justify-content: center;
       align-items: center;
     }
-    
     .modal-content {
-      background: white;
+      background-color: white;
       padding: 30px;
-      border-radius: 15px;
+      border-radius: 8px;
       max-width: 500px;
       text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
-    
     .modal h2 {
-      color: #e74c3c;
-      margin-bottom: 15px;
+      color: #d32f2f;
+      margin-top: 0;
     }
-    
     .modal p {
-      margin: 15px 0;
-      line-height: 1.6;
+      margin: 20px 0;
+      line-height: 1.5;
     }
-    
     .modal button {
-      background: #e74c3c;
+      background-color: #d32f2f;
       color: white;
       border: none;
-      padding: 12px 25px;
-      border-radius: 6px;
-      cursor: pointer;
+      padding: 10px 20px;
       font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    
+    #testContainer {
+      display: none;
+    }
+    
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 10px;
+      color: #0078d7;
+    }
+    
+    .task-content {
+      margin-top: 15px;
+    }
+    .task-content p {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .task-content .task-instructions {
+      color: #666;
+      font-style: italic;
       margin-top: 10px;
     }
     
-    .modal button:hover {
-      background: #c0392b;
+    .submission-confirmation {
+      text-align: center;
+      padding: 10px;
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      border-radius: 4px;
+      margin: 10px 30px;
+    }
+    
+    .typing-speed {
+      text-align: right;
+      font-size: 12px;
+      color: #666;
+      margin-top: 2px;
+    }
+    .typing-speed.warning {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+    
+    .student-name-display {
+      font-weight: bold;
+      line-height: 1.4;
     }
   </style>
 </head>
 <body>
 
-  <!-- Rules Screen -->
   <div id="rulesScreen">
     <div class="rules-container">
       <h1>IELTS Writing Test - Set Four</h1>
-      <p style="text-align: center; color: #7f8c8d; margin-bottom: 30px;">Complete both writing tasks within 60 minutes</p>
+      <h2>Test Rules and Instructions</h2>
+      <p>Please read the following rules carefully before starting your IELTS Writing Test.</p>
       
       <h2>Test Structure</h2>
+      <p>The IELTS Writing Test consists of two tasks:</p>
       <ul>
-        <li><strong>Task 1:</strong> 20 minutes, 150+ words (Table description)</li>
-        <li><strong>Task 2:</strong> 40 minutes, 250+ words (Essay writing)</li>
+        <li><strong>Task 1:</strong> You should spend about 20 minutes on this task. Write at least 150 words.</li>
+        <li><strong>Task 2:</strong> You should spend about 40 minutes on this task. Write at least 250 words.</li>
       </ul>
       
       <h2>Test Duration</h2>
-      <p>Total time: 60 minutes. Timer starts when you click "Start Test" and cannot be paused.</p>
+      <p>The total time for the Writing Test is 60 minutes. The timer will start when you click "I Understand" and cannot be paused.</p>
       
-      <div class="warning-box">
+      <h2>Important Rules</h2>
+      <ul>
+        <li>You must complete both writing tasks within the 60-minute time limit.</li>
+        <li>You must write your answers in the provided text areas.</li>
+        <li>You can switch between Task 1 and Task 2 using the tabs at the bottom of the screen.</li>
+        <li>Your work will be automatically saved as a PDF when you click "Submit and Save as PDF" or when time expires.</li>
+        <li>Your answers will be sent to the examiner via Telegram for evaluation.</li>
+      </ul>
+      
+      <div class="warning">
         <h2>⚠️ Test Security Rules</h2>
-        <p><strong>Important:</strong> To maintain test integrity:</p>
+        <p><strong>Important:</strong> To maintain test integrity, the following restrictions apply:</p>
         <ul>
-          <li>Do not switch browser tabs or applications</li>
-          <li>Do not use external resources or assistance</li>
-          <li>Do not copy/paste content</li>
-          <li>Type at a natural pace (monitored for fairness)</li>
-          <li><strong>2 violations = automatic test submission</strong></li>
+          <li>You <strong>must not</strong> switch to other browser tabs, applications, or windows during the test.</li>
+          <li>You <strong>must not</strong> use any external resources, dictionaries, or assistance.</li>
+          <li>You <strong>must not</strong> copy, paste, or use keyboard shortcuts to open new tabs or windows.</li>
+          <li>You <strong>must not</strong> type at unrealistically high speeds or paste pre-written content.</li>
+          <li>If you attempt to leave the test window or type too fast, you will receive a warning.</li>
+          <li><strong>Two violations will result in automatic test termination and submission.</strong></li>
         </ul>
       </div>
       
       <h2>Technical Requirements</h2>
       <ul>
-        <li>Stable internet connection required</li>
-        <li>Do not refresh or use browser back button</li>
-        <li>Responses auto-save in case of accidental closure</li>
+        <li>Ensure you have a stable internet connection throughout the test.</li>
+        <li>Do not refresh the page or use the browser's back button during the test.</li>
+        <li>Your responses will be saved automatically in case of accidental page closure.</li>
       </ul>
 
       <div class="teacher-selection">
-        <label style="display: block; font-weight: bold; color: #2c3e50; margin-bottom: 15px;">
-          Select Your Teacher (Required):
-        </label>
+        <label>Select Your Teacher (Required):</label>
         <div class="radio-group">
           <label class="radio-label">
             <input type="radio" name="teacher" value="Mr Doniyor" required>
-            <span>Mr Doniyor</span>
+            <span class="radio-custom"></span>
+            Mr Doniyor
           </label>
           <label class="radio-label">
             <input type="radio" name="teacher" value="Mr Xurshid" required>
-            <span>Mr Xurshid</span>
+            <span class="radio-custom"></span>
+            Mr Xurshid
           </label>
         </div>
       </div>
 
       <div class="name-input">
-        <label style="display: block; font-weight: bold; color: #2c3e50; margin-bottom: 8px;">
-          Enter Your Full Name (Required):
-        </label>
-        <input type="text" id="studentName" placeholder="Enter your full name as it should appear on the certificate" required>
-        <small style="color: #7f8c8d; display: block; margin-top: 8px;">Your name will be included in the submission and PDF certificate.</small>
+        <label for="studentName">Enter Your Full Name (Required):</label>
+        <input type="text" id="studentName" placeholder="Please enter your full name" required>
+        <small style="color: #666; display: block; margin-top: 5px;">Your name will be included in the test submission and PDF.</small>
       </div>
       
-      <p style="text-align: center; color: #7f8c8d; margin: 25px 0;">
-        By clicking "Start Test", you acknowledge reading and agreeing to all test rules.
-      </p>
+      <p>By clicking "I Understand" below, you acknowledge that you have read and agree to these rules, and you are ready to begin your IELTS Writing Test.</p>
       
-      <button class="start-button" id="startButton" disabled>Start Test</button>
+      <button class="start-button" id="startButton" disabled>I Understand - Start Test</button>
     </div>
   </div>
 
-  <!-- Test Container -->
   <div id="testContainer">
     <div class="test-info">
-      IELTS Writing Test - Set Four
+      <strong>IELTS Writing Test - Set Four</strong>
     </div>
     
     <div class="header">
       <div class="student-name-display" id="studentNameDisplay"></div>
       <div class="top-right-info">
         <div class="timer-display" id="timer">60:00</div>
-        <div class="violation-counter" id="violationCounter">Violations: 0/2</div>
+        <div class="violation-counter" id="violationCounter" style="display: none;">Violations: 0/2</div>
       </div>
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/IELTS_logo.svg/2560px-IELTS_logo.svg.png" alt="IELTS Logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/IELTS_logo.svg/2560px-IELTS_logo.svg.png" alt="IELTS">
     </div>
 
-    <div class="part-bar" id="partBar">
-      Part 1 - You should spend about 20 minutes on this task. Write at least 150 words.
+    <div id="partBar" class="part-bar">
+      Part 1<br>
+      You should spend about 20 minutes on this task. Write at least 150 words.
     </div>
 
-    <!-- Task 1 Container -->
     <div class="main" id="mainContainer">
-      <div class="left">
+      <div class="left" id="left1">
         <div class="task-content">
           <p><strong>The table below shows the change in the number of people (million) taking part in five different physical activities between 2001 and 2009.</strong></p>
           <p class="task-instructions">Summarise the information by selecting and reporting the main features, making comparisons where relevant.</p>
           <p class="task-instructions">Write at least 150 words.</p>
           <div class="image-container">
-            <img src="https://i.ibb.co/ks6pw8LL/writing-table.jpg" alt="Physical Activities Table" onerror="this.src='https://via.placeholder.com/600x400/3498db/white?text=Table+Image+Loading+Failed'">
+            <img src="https://i.ibb.co/ks6pw8LL/writing-table.jpg" alt="Physical Activities Table">
           </div>
         </div>
       </div>
       <div class="right">
-        <textarea id="textarea1" placeholder="Write your Task 1 response here...
-
-• Describe the main trends
-• Compare different activities
-• Highlight significant changes
-• Write at least 150 words" 
-        spellcheck="false"></textarea>
+        <textarea id="textarea1" spellcheck="false" placeholder="Write your Task 1 response here..." oninput="updateWordCount('1')" onkeydown="handleTyping('1')" onpaste="handlePaste('1')"></textarea>
         <div class="word-count" id="count1">Words: 0</div>
         <div class="typing-speed" id="speed1">Speed: 0 WPM</div>
       </div>
     </div>
 
-    <!-- Task 2 Container -->
     <div class="main" id="mainContainer2" style="display: none;">
-      <div class="left">
+      <div class="left" id="left2">
         <div class="task-content">
-          <p><strong>Some people say manufacturers and supermarkets are responsible for reducing the packaging on the products they sell. Others argue that consumers should buy products with less packaging.</strong></p>
-          <p class="task-instructions">Discuss both views and give your own opinion.</p>
+          <p><strong>Some people say manufacturers and supermarkets are responsible for reducing the packaging on the products they sell. Others argue that consumers should buy products with less packaging. Discuss both views and give your own opinion.</strong></p>
+          <p class="task-instructions">Discuss both views and give your opinion.</p>
           <p class="task-instructions">Write at least 250 words.</p>
         </div>
       </div>
       <div class="right">
-        <textarea id="textarea2" placeholder="Write your Task 2 response here...
-
-• Discuss manufacturer/supermarket responsibility
-• Discuss consumer responsibility  
-• Give your own opinion with reasons
-• Write at least 250 words"
-        spellcheck="false"></textarea>
+        <textarea id="textarea2" spellcheck="false" placeholder="Write your Task 2 response here..." oninput="updateWordCount('2')" onkeydown="handleTyping('2')" onpaste="handlePaste('2')"></textarea>
         <div class="word-count" id="count2">Words: 0</div>
         <div class="typing-speed" id="speed2">Speed: 0 WPM</div>
       </div>
     </div>
 
-    <div class="loading" id="loadingIndicator">
-      <div style="margin-bottom: 10px;">⏳ Sending answers to examiner...</div>
-      <small>Please don't close this window</small>
-    </div>
+    <div class="loading" id="loadingIndicator">Sending answers to examiner... Please wait.</div>
     
-    <div class="submission-confirmation" id="submissionConfirmation">
-      ✅ Test submitted successfully! PDF download should start automatically.
+    <div id="submissionConfirmation" class="submission-confirmation" style="display: none;">
+      Test submitted successfully! You can now review your answers.
     </div>
     
     <button class="submit-btn" id="submitButton">Submit and Save as PDF</button>
-    <button class="review-btn" id="reviewButton" style="display: none;">Review Answers</button>
+    <button class="review-btn" id="reviewButton" style="display: none;">Review Only</button>
 
     <div class="tab-buttons">
-      <button id="tab1" class="active">Part 1 - Table Description</button>
-      <button id="tab2">Part 2 - Essay Writing</button>
+      <button id="tab1" class="active">Part 1</button>
+      <button id="tab2">Part 2</button>
     </div>
   </div>
 
-  <!-- Modals -->
   <div id="warningModal" class="modal">
     <div class="modal-content">
-      <h2>⚠️ Test Violation Detected</h2>
+      <h2>Warning: Test Violation</h2>
       <p>You have switched to another application or tab during the test.</p>
-      <p>This violates test rules. Your test will be automatically submitted.</p>
+      <p>This is a violation of test rules. Your test will be automatically submitted now.</p>
       <button id="forceSubmitBtn">OK</button>
     </div>
   </div>
 
   <div id="typingWarningModal" class="modal">
     <div class="modal-content">
-      <h2>⚠️ Unusual Typing Pattern</h2>
-      <p>Your typing speed appears unusually high, which may indicate pasting content.</p>
-      <p>Please ensure you are typing your own responses.</p>
+      <h2>Warning: Unusual Typing Pattern Detected</h2>
+      <p>Your typing speed appears to be unusually high, which may indicate pasting content or using assistance.</p>
+      <p>Please ensure you are typing your own responses. Further violations will result in test termination.</p>
       <button id="closeTypingWarning">I Understand</button>
     </div>
   </div>
@@ -758,14 +705,14 @@
       activateAntiCheating();
       preloadImage();
       initializeTypingMonitoring();
-      
-      console.log('✅ Test started for:', state.studentName);
     }
 
     function updateViolationCounter() {
       elements.violationCounter.textContent = `Violations: ${state.warningCount}/${state.maxWarnings}`;
       if (state.warningCount > 0) {
-        elements.violationCounter.classList.add('warning');
+        elements.violationCounter.style.backgroundColor = "#f8d7da";
+        elements.violationCounter.style.color = "#721c24";
+        elements.violationCounter.style.borderColor = "#f5c6cb";
       }
     }
 
@@ -870,9 +817,6 @@
         ctx.drawImage(img, 0, 0);
         state.task1ImageData = canvas.toDataURL('image/png');
       };
-      img.onerror = function() {
-        console.warn('Failed to load task image');
-      };
       img.src = state.chosenTask1.image;
     }
 
@@ -884,12 +828,11 @@
         const seconds = state.totalSeconds % 60;
         elements.timer.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
         
-        // Warning state for last 5 minutes
         if (state.totalSeconds <= 300) {
-          elements.timer.classList.add('warning');
+          elements.timer.style.color = "#d32f2f";
+          elements.timer.style.fontSize = "20px";
         }
         
-        // Time's up
         if (state.totalSeconds === 0) {
           clearInterval(state.timer);
           if (!state.isSubmitted) {
@@ -928,8 +871,7 @@
         if (state.isTestActive) {
           if (e.key === 'F12' || 
               (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-              (e.ctrlKey && e.shiftKey && e.key === 'C') ||
-              (e.ctrlKey && e.key === 'u')) {
+              (e.ctrlKey && e.shiftKey && e.key === 'C')) {
             e.preventDefault();
             return false;
           }
@@ -947,7 +889,7 @@
       if (state.warningCount >= state.maxWarnings) {
         elements.warningModal.style.display = 'flex';
       } else {
-        alert(`Warning ${state.warningCount}/${state.maxWarnings}: ${getViolationMessage(type)}`);
+        alert(`Warning ${state.warningCount}/${state.maxWarnings}: ${getViolationMessage(type)} \n\nNext violation will result in automatic test termination.`);
         setTimeout(() => { state.violationDetected = false; }, 1000);
       }
     }
@@ -982,14 +924,15 @@
       elements.mainContainer.style.display = part === 1 ? 'flex' : 'none';
       elements.mainContainer2.style.display = part === 2 ? 'flex' : 'none';
 
-      elements.tab1.classList.toggle('active', part === 1);
-      elements.tab2.classList.toggle('active', part === 2);
+      elements.tab1.classList.remove("active");
+      elements.tab2.classList.remove("active");
+      elements[`tab${part}`].classList.add("active");
 
       const partText = part === 1
-        ? "Part 1 - You should spend about 20 minutes on this task. Write at least 150 words."
-        : "Part 2 - You should spend about 40 minutes on this task. Write at least 250 words.";
+        ? "Part 1<br>You should spend about 20 minutes on this task. Write at least 150 words."
+        : "Part 2<br>You should spend about 40 minutes on this task. Write at least 250 words.";
 
-      elements.partBar.textContent = partText;
+      elements.partBar.innerHTML = partText;
     }
 
     async function sendToTelegram(message, testData) {
@@ -1027,7 +970,7 @@
 
     async function submitTest() {
       if (state.isSubmitted) {
-        alert("Test has already been submitted. You can only review your answers.");
+        alert("Test has already been submitted. You can only review your answers now.");
         return;
       }
       
@@ -1127,10 +1070,8 @@ ${task2Answer || 'No answer provided'}
       elements.textarea2.disabled = true;
       
       if (!telegramSuccess) {
-        console.warn('Telegram notification failed. Check environment variables.');
+        alert('Test submitted locally. Telegram notification failed - check console for details.');
       }
-      
-      console.log('✅ Test submitted successfully');
     }
 
     function reviewTest() {
@@ -1141,57 +1082,97 @@ ${task2Answer || 'No answer provided'}
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
-      // Header
-      doc.setFontSize(18);
-      doc.setTextColor(41, 128, 185);
-      doc.text("IELTS Writing Test - Set Four", 20, 20);
-      
-      doc.setFontSize(11);
-      doc.setTextColor(100, 100, 100);
-      doc.text(`Teacher: ${state.teacherName}`, 20, 30);
-      doc.text(`Student: ${state.studentName}`, 20, 36);
-      doc.text(`Submitted: ${new Date().toLocaleString()}`, 20, 42);
-      doc.text(`Violations: ${state.violations.total} (${state.warningCount}/2 warnings)`, 20, 48);
-
-      // Task 1
-      doc.setFontSize(14);
-      doc.setTextColor(0, 0, 0);
-      doc.text("TASK 1 - TABLE DESCRIPTION", 20, 60);
-      
-      doc.setFontSize(10);
-      const task1Question = "The table below shows the change in the number of people (million) taking part in five different physical activities between 2001 and 2009. Summarise the information by selecting and reporting the main features, making comparisons where relevant.";
-      const task1Lines = doc.splitTextToSize(task1Question, 170);
-      doc.text(task1Lines, 20, 70);
-      
-      doc.text("Student's Answer:", 20, 90);
-      const answer1Lines = doc.splitTextToSize(task1Answer || "No answer provided", 170);
-      doc.text(answer1Lines, 20, 100);
-      
-      doc.text(`Word Count: ${task1WordCount} ${task1WordCount < 150 ? "(Below minimum)" : "(Meets requirement)"}`, 20, 130);
-
-      // Task 2 (new page)
-      doc.addPage();
-      doc.setFontSize(18);
-      doc.setTextColor(41, 128, 185);
-      doc.text("IELTS Writing Test - Set Four", 20, 20);
+      doc.setFontSize(16);
+      doc.text("IELTS Writing Test - Set Four", 10, 10);
+      doc.setFontSize(12);
+      doc.text(`Teacher: ${state.teacherName}`, 10, 20);
+      doc.text(`Student: ${state.studentName}`, 10, 30);
+      doc.text(`Timestamp: ${new Date().toLocaleString()}`, 10, 40);
+      doc.text(`Violations: ${state.violations.total} (${state.warningCount}/2 warnings)`, 10, 50);
       
       doc.setFontSize(14);
-      doc.text("TASK 2 - ESSAY WRITING", 20, 40);
+      doc.text("IELTS Writing Task 1", 10, 65);
+      doc.setFontSize(12);
       
-      doc.setFontSize(10);
-      const task2Question = "Some people say manufacturers and supermarkets are responsible for reducing the packaging on the products they sell. Others argue that consumers should buy products with less packaging. Discuss both views and give your own opinion.";
-      const task2Lines = doc.splitTextToSize(task2Question, 170);
-      doc.text(task2Lines, 20, 50);
+      let yOffset = 75;
+      if (state.chosenTask1.question) {
+        const task1Lines = doc.splitTextToSize(state.chosenTask1.question.replace(/\n/g, " "), 180);
+        doc.text(task1Lines, 10, yOffset);
+        yOffset += task1Lines.length * 5 + 5;
+      }
       
-      doc.text("Student's Answer:", 20, 80);
-      const answer2Lines = doc.splitTextToSize(task2Answer || "No answer provided", 170);
-      doc.text(answer2Lines, 20, 90);
-      
-      doc.text(`Word Count: ${task2WordCount} ${task2WordCount < 250 ? "(Below minimum)" : "(Meets requirement)"}`, 20, 260);
+      if (state.task1ImageData) {
+        const img = new Image();
+        img.src = state.task1ImageData;
+        img.onload = function() {
+          const imgWidth = img.width;
+          const imgHeight = img.height;
+          const maxWidth = 180;
+          const maxHeight = 80;
+          let width = imgWidth;
+          let height = imgHeight;
 
-      // Save PDF
-      const fileName = `IELTS_Writing_${state.studentName.replace(/\s+/g, '_')}_${Date.now()}.pdf`;
-      doc.save(fileName);
+          if (width > maxWidth) {
+            height = (maxWidth / width) * height;
+            width = maxWidth;
+          }
+          if (height > maxHeight) {
+            width = (maxHeight / height) * width;
+            height = maxHeight;
+          }
+
+          doc.addImage(state.task1ImageData, "PNG", 10, yOffset, width, height);
+          doc.text("Answer:", 10, yOffset + height + 10);
+          const answerLines = doc.splitTextToSize(task1Answer, 180);
+          doc.text(answerLines, 10, yOffset + height + 20);
+
+          doc.addPage();
+          doc.setFontSize(16);
+          doc.text("IELTS Writing Test - Set Four", 10, 10);
+          doc.setFontSize(12);
+          doc.text(`Teacher: ${state.teacherName}`, 10, 20);
+          doc.text(`Student: ${state.studentName}`, 10, 30);
+          doc.text(`Violations: ${state.violations.total} (${state.warningCount}/2 warnings)`, 10, 40);
+          doc.setFontSize(14);
+          doc.text("IELTS Writing Task 2", 10, 55);
+          doc.setFontSize(12);
+          
+          if (state.chosenTask2) {
+            const task2Lines = doc.splitTextToSize(state.chosenTask2.replace(/\n/g, " "), 180);
+            doc.text(task2Lines, 10, 65);
+            doc.text("Answer:", 10, 95);
+            const answer2Lines = doc.splitTextToSize(task2Answer, 180);
+            doc.text(answer2Lines, 10, 105);
+          }
+
+          doc.save(`IELTS_Writing_${state.studentName.replace(/\s+/g, '_')}.pdf`);
+        };
+      } else {
+        doc.text("Answer:", 10, yOffset);
+        const answerLines = doc.splitTextToSize(task1Answer, 180);
+        doc.text(answerLines, 10, yOffset + 10);
+
+        doc.addPage();
+        doc.setFontSize(16);
+        doc.text("IELTS Writing Test - Set Four", 10, 10);
+        doc.setFontSize(12);
+        doc.text(`Teacher: ${state.teacherName}`, 10, 20);
+        doc.text(`Student: ${state.studentName}`, 10, 30);
+        doc.text(`Violations: ${state.violations.total} (${state.warningCount}/2 warnings)`, 10, 40);
+        doc.setFontSize(14);
+        doc.text("IELTS Writing Task 2", 10, 55);
+        doc.setFontSize(12);
+        
+        if (state.chosenTask2) {
+          const task2Lines = doc.splitTextToSize(state.chosenTask2.replace(/\n/g, " "), 180);
+          doc.text(task2Lines, 10, 65);
+          doc.text("Answer:", 10, 95);
+          const answer2Lines = doc.splitTextToSize(task2Answer, 180);
+          doc.text(answer2Lines, 10, 105);
+        }
+
+        doc.save(`IELTS_Writing_${state.studentName.replace(/\s+/g, '_')}.pdf`);
+      }
     }
 
     function forceSubmit() {
