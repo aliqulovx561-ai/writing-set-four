@@ -1,7 +1,7 @@
 {
   "name": "ielts-writing-test-set-four",
   "version": "1.0.0",
-  "description": "IELTS Writing Test Platform - Set Four with Anti-Cheating Features",
+  "description": "IELTS Writing Test Platform - Set Four",
   "type": "module",
   "scripts": {
     "dev": "vite",
